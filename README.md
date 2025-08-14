@@ -25,3 +25,6 @@ You do *not* need to set up a database or any interactivity on the webpage yet. 
 
 wewe's version of Boot.dev's Notely app.
 عملت ميرج قبل ما اعمل تيست جد اني وردة
+
+
+![CI Tests](https://github.com/lamakhaledd/learn-cicd-starter/actions/workflows/ci.yml/badge.svg) 
