@@ -2,11 +2,13 @@ name: CD
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   Deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -20,3 +22,14 @@ jobs:
         run: |
           chmod +x scripts/buildprod.sh
           ./scripts/buildprod.sh
+
+      - name: Set up Google Cloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+          project_id: notely-469212
+
+      - name: Build and Push Docker image
+        run: |
+          gcloud builds submit \
+            --tag us-central1-docker.pkg.dev/notely-469212/notely-ar-repo/my-app:latest
