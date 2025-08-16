@@ -48,7 +48,7 @@ jobs:
           curl -sSfL https://get.tur.so/install.sh | bash
           export PATH="$HOME/.turso/bin:$PATH"
 
-          turso auth login --headless
+          turso auth login --url "${{ secrets.DATABASE_URL }}" --headless
           turso db shell notely-db --execute "
             CREATE TABLE IF NOT EXISTS notes (
               id INTEGER PRIMARY KEY,
