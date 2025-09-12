@@ -1,4 +1,4 @@
-name: Build and Deploy Docker
+name: CD
 
 on:
   push:
@@ -6,23 +6,35 @@ on:
       - main
 
 jobs:
-  build:
+  Deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS2 }}
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        project_id: notelyy
+      - name: Build production binary
+        run: |
+          chmod +x scripts/buildprod.sh
+          ./scripts/buildprod.sh
 
-    - name: Build and push Docker image
-      run: |
-        gcloud builds submit --tag us-central1-docker.pkg.dev/notelyy/notely-test/notelyy:latest .
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: notely-469212
+          version: 'latest'
+
+      - name: Build and Push Docker image
+        run: |
+          gcloud builds submit \
+            --tag us-central1-docker.pkg.dev/notely-469212/notely-ar-repo/my-app:latest
